@@ -14,6 +14,7 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { loadModules } from 'esri-loader';
 import esri = __esri; // Esri TypeScript Types
+// import * as WebMap from 'esri/WebMap';
 
 @Component({
   selector: 'app-esri-map',
@@ -36,8 +37,8 @@ export class EsriMapComponent implements OnInit {
   draw: any;
   esriDraw: any;
   esriGraphic: any;
-  private _zoom = 10;
-  private _center: Array<number> = [0.1278, 51.5074];
+  private _zoom = 16;
+  private _center: Array<number> = [34.1278, 73.5074];
   private _basemap = 'streets';
   private _loaded = false;
   
@@ -80,8 +81,9 @@ export class EsriMapComponent implements OnInit {
     try {
 
       // Load the modules for the ArcGIS API for JavaScript
-      const [EsriMap, EsriMapView, Graphic, Draw] = await loadModules([
+      const [EsriMap, WebMap, EsriMapView, Graphic, Draw] = await loadModules([
         'esri/Map',
+        "esri/WebMap",
         'esri/views/MapView',
         'esri/Graphic',
         'esri/views/draw/Draw'
@@ -94,15 +96,20 @@ export class EsriMapComponent implements OnInit {
         basemap: this._basemap
       };
 
-      const map: esri.Map = new EsriMap(mapProperties);
+      const map: esri.Map = new EsriMap(mapProperties);      
+
+      const webmap = new WebMap({
+        portalItem: {
+          id: "5c6ec52a35bc4341b50c00235be138d3"
+        }
+      });
 
       // Initialize the MapView
       const mapViewProperties: esri.MapViewProperties = {
         container: this.mapViewEl.nativeElement,
-        center: this._center,
-        zoom: this._zoom,
-        map: map
+        map: webmap
       };
+      
 
       return new EsriMapView(mapViewProperties);
 
